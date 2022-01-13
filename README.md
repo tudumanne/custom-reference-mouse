@@ -42,6 +42,7 @@ rDNA reads mapping across rest of the genome - unmasked, hard-masked vs. custom 
 % N’s indicates the unmappable portion in the genome which affects the genome-wide ChIP-seq analysis
 
 150bp fragments generated from canonical copy - best alignment
+
 <img width="500" alt="Screen Shot 2022-01-13 at 7 41 57 pm" src="https://user-images.githubusercontent.com/36429476/149296142-57d8cc40-6db2-4a75-aabd-28f575b24cc4.png">
 
 <img width="500" alt="Screen Shot 2022-01-13 at 7 42 25 pm" src="https://user-images.githubusercontent.com/36429476/149296150-dedb5657-6a75-41ae-a1c7-0df8477820b0.png">
