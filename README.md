@@ -3,7 +3,7 @@
 ### Workflow - creating a custom manually masked reference 
 <img width="500" alt="Screen Shot 2022-01-13 at 7 45 23 pm" src="https://user-images.githubusercontent.com/36429476/149296322-0f8179b7-e9b2-48c3-b051-80376efff178.png">
 
-### Step 1: Examine if there are any ‘rDNA-like’ regions across the mouse reference genome (GRCm38.mm10) that can interfere with read alignment
+#### Step 1: Examine if there are any ‘rDNA-like’ regions across the mouse reference genome (GRCm38.mm10) that can interfere with read alignment
 
 1.1 First the rDNA canonical copy was fragmented in-silico to generate overlapping fragments with step size of 1bp
 
@@ -27,7 +27,7 @@ The following circos plots illustrate the 'rDNA-like' regions present across the
 <img width="400" alt="Screen Shot 2022-01-13 at 7 32 24 pm" src="https://user-images.githubusercontent.com/36429476/149294299-ec554279-bf66-4d3f-a9f0-a35fa42cef0f.png">
 
 
-### Step 2: Identify and mask regions across the genome that can interfere with read mapping across rDNA during ChIP-seq data analysis
+#### Step 2: Identify and mask regions across the genome that can interfere with read mapping across rDNA during ChIP-seq data analysis
 
 2.1 The rDNA canonical copy was fragmented in-silico to generate overlapping fragments of 150bp with step size of 1bp         	
 
@@ -38,16 +38,27 @@ The following circos plots illustrate the 'rDNA-like' regions present across the
 
 - Considering the possible sequence variation in experimental samples stringent settings (alignment without rDNA copy and allowing multiple alignments) were used to identify ‘rDNA-like’ regions.
 
+```console
+bowtie2 -x index_unmasked -U rDNA_150bp.fa -f -p 24 -k 1000 | samtools view -bS > unmasked_50bp.bam
 
-2.3 ‘rDNA-like’ sequences across the genome were extracted as a .bed file (using R packages) and the identified regions were masked in the GRCm38.mm10 reference (without scaffolds) using 'maskfasta' - bedtools. 
+samtools sort unmasked_50bp.bam > unmasked_50bp_sorted.bam
+samtools index unmasked_50bp_sorted.bam
+```
 
-- Canonical rDNA reference was incorporated to the resulting fasta file which was then used as the custom reference for ChIP-seq data analysis.  
+2.3 ‘rDNA-like’ sequences across the genome were extracted as a .bed file (R script - circos_plot.R) and the identified regions were masked in the GRCm38.mm10 reference (without scaffolds) using 'maskfasta' - bedtools.
 
-rDNA reads mapping across rest of the genome - unmasked, hard-masked vs. custom reference
+```console
+bedtools maskfasta -fi reference.fa -bed regions.bed -fo reference_rdna_masked.fa
+```
 
-% N’s indicates the unmappable portion in the genome which affects the genome-wide ChIP-seq analysis
+- Canonical rDNA reference was incorporated to the resulting fasta file which was then used as the custom reference for ChIP-seq data analysis.
+  
 
-150bp fragments generated from canonical copy - best alignment
+#### rDNA reads mapping across rest of the genome - unmasked, hard-masked vs. custom reference
+
+- % N’s indicates the unmappable portion in the genome which affects the genome-wide ChIP-seq analysis
+
+- 150bp fragments generated from canonical copy - best alignment
 
 <img width="400" alt="Screen Shot 2022-01-13 at 7 41 57 pm" src="https://user-images.githubusercontent.com/36429476/149296142-57d8cc40-6db2-4a75-aabd-28f575b24cc4.png">
 
@@ -58,6 +69,9 @@ rDNA reads mapping across rest of the genome - unmasked, hard-masked vs. custom 
 <img width="400" alt="Screen Shot 2022-01-13 at 7 42 51 pm" src="https://user-images.githubusercontent.com/36429476/149296160-7047b059-2108-4b53-a155-d2ab7cc75a03.png">
 
 
+2.4 Mappability percentage and mapping quality (MAPQ) across rDNA for different reference genomes were determined using Samtools 'mpileup' command.
 
+```console
+samtools mpileup -f reference.fa -B -r rDNA_repeat -o input_mpileup -O -s -a -R input_seq.bam
 
-
+```
